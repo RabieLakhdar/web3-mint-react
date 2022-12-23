@@ -29,8 +29,13 @@ const Collection = () => {
   }, [])
 
   return (
-    <div>
-      <ImageList  variant="woven" cols={3} gap={8}>
+    <div style={{
+      display: 'block',
+      margin: 'auto',
+      width: '50%',
+      marginTop: "50px",
+    }}>
+      <ImageList cols={3} gap={8}>
         {nftCollection.map((item) => (
           <ImageListItem key={item}>
             <img

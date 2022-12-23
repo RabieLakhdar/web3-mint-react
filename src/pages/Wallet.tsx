@@ -2,16 +2,15 @@ import * as React from 'react';
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import { ethers } from "ethers";
+import { NFTMinter__factory } from
+  '../typechain-types/factories/contracts/NFTMinter__factory'
 import type { NFTMinter } from '../typechain-types/contracts/NFTMinter';
+import { ethers } from "ethers";
 
 const Wallet = () => {
 
-  const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS;
-  interface Props {
-    window?: () => Window;
-    children?: React.ReactElement;
-  }
+  const contractAddress: any = process.env.REACT_APP_CONTRACT_ADDRESS;
+
   interface IWallet {
     iconColor: string;
     connectedWallet: string;
@@ -101,7 +100,13 @@ const Wallet = () => {
   };
 
   return (
-    <React.Fragment>
+    <div style={{
+      display: 'block',
+      margin: 'auto',
+      width: '50%',
+      marginTop: "50px",
+    }}>
+      {service.account && <h3 style={{color: "#2076d2"}}>Status: Connected</h3>}
       {!service.account && <Button onClick={connectWallet}>Connect wallet</Button>}
       <div style={{ margin: "60px", display: "grid", height: "300px" }}>
 
@@ -112,7 +117,9 @@ const Wallet = () => {
             inputProps={{ readOnly: true, }}
           />
         </Box>
-        <TextField id="contract_symbol" label="Contract Symbol"
+        <TextField id="contract_symbol"
+          label="Contract Symbol"
+          sx={{ width: 600 }}
           value={state.contractSymbol}
           inputProps={{ readOnly: true, }}
         />
@@ -131,7 +138,7 @@ const Wallet = () => {
           />
         </Box>
       </div>
-    </React.Fragment>
+    </div>
   );
 }
 
