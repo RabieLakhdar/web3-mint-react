@@ -18,7 +18,7 @@ interface Props {
     window?: () => Window;
 }
 
-const navItems = ['Home', 'Collection', 'Mint', 'Withdraw'];
+const navItems = ['Wallet', 'Collection', 'Mint', 'Withdraw'];
 
 export default function DrawerAppBar(props: Props) {
     const { window } = props;

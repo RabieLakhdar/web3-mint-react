@@ -7,7 +7,6 @@ import ImageListItem from '@mui/material/ImageListItem';
 const Collection = () => {
 
   const [nftCollection, setNFTCollection] = React.useState<string[]>([]);
-  console.log(process.env.REACT_APP_BASEURI)
   useEffect(() => {
     try {
       console.log("load NFT collection");
@@ -15,10 +14,14 @@ const Collection = () => {
       baseURI = baseURI.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
       setNFTCollection(
         [
-          `${baseURI}0001.png`,
-          `${baseURI}0002.png`,
-          `${baseURI}0003.png`,
-          `${baseURI}0004.png`,
+          `${baseURI}/0001.png`,
+          `${baseURI}/0002.png`,
+          `${baseURI}/0003.png`,
+          `${baseURI}/0004.png`,
+          `${baseURI}/0005.png`,
+          `${baseURI}/0006.png`,
+          `${baseURI}/0007.png`,
+          `${baseURI}/0008.png`,
         ]);
     } catch (error) {
       console.log(error);
@@ -26,20 +29,18 @@ const Collection = () => {
   }, [])
 
   return (
-    <React.Fragment>
-      <ImageList sx={{ width: 500, height: 450 }} cols={3} rowHeight={164}>
+    <div>
+      <ImageList  variant="woven" cols={3} gap={8}>
         {nftCollection.map((item) => (
           <ImageListItem key={item}>
             <img
-              src={`${item}?w=164&h=164&fit=crop&auto=format`}
-              srcSet={`${item}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-              loading="lazy"
+              src={item}
             />
           </ImageListItem>
         ))}
       </ImageList>
 
-    </React.Fragment>
+    </div>
   );
 }
 

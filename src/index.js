@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import Demo from "./Demo"
 import Collection from "./pages/Collection"
 import Layout from "./components/Layout"
+import Wallet from "./pages/Wallet"
 import ErrorPage from "./pages/Error"
 import reportWebVitals from './reportWebVitals';
 import {
@@ -22,8 +23,8 @@ const router = createBrowserRouter([
         element: <Collection />,
       },
       {
-        path: "/home",
-        element: <Collection />,
+        path: "/wallet",
+        element: <Wallet />,
       },
       {
         path: "/mint",
