@@ -1,8 +1,5 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import CssBaseline from '@mui/material/CssBaseline';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from "react"
 
 import { BigNumber, ethers } from "ethers";
 import Box from '@mui/material/Box'
@@ -11,14 +8,11 @@ import Button from '@mui/material/Button'
 import Modal from '@mui/material/Modal'
 import Fade from "@mui/material/Fade"
 import { NFTMinter__factory } from
-  './typechain-types/factories/contracts/NFTMinter__factory'
-import type { NFTMinter } from './typechain-types/contracts/NFTMinter';
-import Backdrop from '@mui/material/Backdrop';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
+  '../typechain-types/factories/contracts/NFTMinter__factory'
+import type { NFTMinter } from '../typechain-types/contracts/NFTMinter';
+
 import Stack from '@mui/material/Stack';
-import Avatar from '@mui/material/Avatar';
-import logo from './metamask.svg';
+
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -33,9 +27,9 @@ const modalStyle = {
 };
 
 
-function Demo() {
+const Mint = () => {
 
-  const contractAddress = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+  const contractAddress: any = process.env.REACT_APP_CONTRACT_ADDRESS;
 
   interface IWallet {
     iconColor: string;
@@ -75,8 +69,8 @@ function Demo() {
     mintAmount: 0
   })
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const handleClose = () => setOpen(false);
-  const [nftCollection, setNFTCollection] = React.useState<string[]>([]);
 
   const connectWallet = async () => {
     try {
@@ -94,16 +88,13 @@ function Demo() {
       console.log("Connected", accounts[0]);
 
       const provider = new ethers.providers.Web3Provider(ethereum);
-      const contract = NFTMinter__factory.connect
-        (contractAddress, provider.getSigner());
-      //const contract = new ethers.Contract
-      //(contractAddress, NFTCollectible__factory.abi, signer) as NFTCollectible;
+      const contract = NFTMinter__factory.connect(contractAddress, provider.getSigner());
+      //const contract = new ethers.Contract(contractAddress, NFTCollectible__factory.abi, signer) as NFTCollectible;
       const ownerAddress = await contract.owner();
       const symbol = await contract.symbol();
       const baseTokenURI = await contract.baseTokenURI();
       const balance = await (await contract.balanceOf(accounts[0])).toNumber();
-      const ethBalance = ethers.utils.formatEther
-        (await provider.getBalance(accounts[0]));
+      const ethBalance = ethers.utils.formatEther(await provider.getBalance(accounts[0]));
       const isOwner = (ownerAddress.toLowerCase() === accounts[0].toLowerCase());
       const price = ethers.utils.formatEther(await contract.PRICE());
       setState({
@@ -117,32 +108,32 @@ function Demo() {
         isOwner: isOwner
       });
 
+      setService({
+        account: accounts[0],
+        contract: contract,
+        currentBalance: balance,
+        ethBalance: `${ethBalance} ETH`,
+        mintAmount: 0,
+        ethProvider: provider
+      });
+
       console.log("Connected", accounts[0]);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const loadNFTCollection = async () => {
-    try {
-      console.log("load NFT collection");
-      let baseURI: string = state.contractBaseTokenURI;
-      baseURI = baseURI.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/");
-      setNFTCollection(
-        [
-          `${baseURI}0001.png`,
-          `${baseURI}0002.png`,
-          `${baseURI}0003.png`,
-          `${baseURI}0004.png`,
-        ]);
-    } catch (error) {
-      console.log(error);
+  useEffect(() => {
+    if (!service.account) {
+      connectWallet()
     }
-  };
+  }, [service])
 
   const mintNFTs = async () => {
     try {
-      console.log("mint NFTs", service);
+      setOpen(false)
+      setLoading(true)
+
       const address = service.account;
       const amount = service.mintAmount!;
       const contract = service.contract!;
@@ -152,78 +143,34 @@ function Demo() {
       let txn = await contract.connect(signer!).mintNFTs(amount, { value: ethValue });
       await txn.wait();
       const balance = await contract.balanceOf(address);
-      setService({ ...service, currentBalance: balance.toNumber(), mintAmount: 0 });
+      await setService({ ...service, currentBalance: balance.toNumber(), mintAmount: 0 });
+      await setLoading(false)
+      await alert(`Congratulations, ${amount} its Minted`)
+
     } catch (error) {
       console.log(error);
+      setLoading(false)
     }
   };
-
   return (
     <React.Fragment>
-      <CssBaseline />
-      <AppBar>
-        <Toolbar>
-          <Stack direction="row" spacing={2}>
-            <Typography variant="h3" component="div">
-              Rabiel.dev NFT Mint
-            </Typography>
-            <Avatar alt="logo" src={logo} sx={{ width: 64, height: 64 }} />
-          </Stack>
-        </Toolbar>
-      </AppBar>
-      <Toolbar />
-      <Button onClick={connectWallet}>connect wallet</Button>
-      <Button onClick={loadNFTCollection}>Load NFTS</Button>
-      <Button onClick={() => setOpen(true)}>Mint</Button>
-
-      <div style={{ margin: "60px", display: "grid", height: "300px" }}>
-
-        <Box sx={{ display: 'display', alignItems: 'flex-end' }}>
-          <TextField id="wallet_address" label="Connected Account"
-            sx={{ width: 300 }} variant="standard" value={state.connectedWallet}
-            inputProps={{ readOnly: true, }}
-          />
-        </Box>
-        <TextField id="contract_symbol" label="Contract Symbol"
-          vari-ant="standard" value={state.contractSymbol}
-          inputProps={{ readOnly: true, }}
-        />
-        <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-          <TextField id="contract_address" label="Contract Address"
-            sx={{ width: 400 }} variant="standard" value={state.contractAddress}
-            inputProps={{ readOnly: true, }}
-          />
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-          <TextField id="contract_baseURI" label="Contract Base Token URI"
-            sx={{ width: 500 }} variant="standard" value={state.contractBaseTokenURI}
-            inputProps={{ readOnly: true, }}
-          />
-        </Box>
+      <div style={{ margin: "50px" }}>
+        <h4 style={{ color: "#2076d2" }}> Your NFT balance: {`${service.currentBalance}`}</h4>
+      </div>
+      <div style={{ margin: "50px" }}>
+        {
+          loading ? <h3 style={{ color: "#2076d2" }}>"The transaction on progress ..."</h3> :
+            <Button onClick={() => setOpen(true)}>Click to Mint</Button>
+        }
       </div>
 
-      <ImageList sx={{ width: 500, height: 450 }} cols={3} rowHeight={164}>
-        {nftCollection.map((item) => (
-          <ImageListItem key={item}>
-            <img
-              src={`${item}?w=164&h=164&fit=crop&auto=format`}
-              srcSet={`${item}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-              loading="lazy"
-            />
-          </ImageListItem>
-        ))}
-      </ImageList>
+
 
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}
         onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
       >
         <Fade in={open}>
           <Box sx={modalStyle}>
@@ -241,15 +188,21 @@ function Demo() {
                 />
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                <TextField id="balance" label="Balance"
-                  sx={{ width: 500 }} variant="standard" value={service.currentBalance}
-                  type="number" inputProps={{ readOnly: true }}
+                <TextField
+                  id="balance"
+                  label="Balance"
+                  sx={{ width: 500 }}
+                  variant="standard"
+                  value={service.currentBalance}
+                  type="number"
+                  inputProps={{ readOnly: true }}
                 />
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                 <TextField id="mint_amount" type="number"
                   label="Mint Amount" sx={{ width: 500 }}
-                  variant="standard" value={service.mintAmount}
+                  variant="standard" 
+                  value={service.mintAmount || 1}
                   onChange={event => {
                     const { value } = event.target;
                     const amount = parseInt(value);
@@ -269,4 +222,4 @@ function Demo() {
   );
 }
 
-export default Demo;
+export default Mint;

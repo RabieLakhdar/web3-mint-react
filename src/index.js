@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Demo from "./Demo"
 import Collection from "./pages/Collection"
 import Layout from "./components/Layout"
 import Wallet from "./pages/Wallet"
+import Mint from "./pages/Mint"
 import ErrorPage from "./pages/Error"
 import reportWebVitals from './reportWebVitals';
 import {
@@ -28,7 +28,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/mint",
-        element: <Collection />,
+        element: <Mint />,
       },
       {
         path: "/withdraw",
